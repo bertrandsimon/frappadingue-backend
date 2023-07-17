@@ -1,14 +1,14 @@
 var express = require("express");
 var router = express.Router();
-const Store = require("../models/stores");
-const Skill = require("../models/skills");
-const Evaluation = require("../models/evaluations");
-const Applicant = require("../models/applicants");
-const Admin = require("../models/admins");
-const Template = require("../models/templates");
-const JobType = require("../models/jobTypes");
-const Contract = require("../models/contracts");
-const Job = require("../models/jobs");
+// const Store = require("../models/stores");
+// const Skill = require("../models/skills");
+// const Evaluation = require("../models/evaluations");
+// const Applicant = require("../models/applicants");
+// const Admin = require("../models/admins");
+// const Template = require("../models/templates");
+// const JobType = require("../models/jobTypes");
+// const Contract = require("../models/contracts");
+// const Job = require("../models/jobs");
 
 //http://localhost:3000/edito
 //router.get edito for home page

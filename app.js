@@ -6,11 +6,12 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 require("./models/connection");
 
-const jobsRouter = require("./routes/jobs");
+// const jobsRouter = require("./routes/jobs");
 var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
-const adminRouter = require("./routes/admin");
-const statsRouter = require("./routes/stats");
+// var usersRouter = require("./routes/users");
+// const adminRouter = require("./routes/admin");
+// const statsRouter = require("./routes/stats");
+const eventsRouter = require("./routes/events");
 
 var app = express();
 
@@ -25,9 +26,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
-app.use("/jobs", jobsRouter);
-app.use("/stats", statsRouter);
+app.use("/events", eventsRouter);
+// app.use("/users", usersRouter);
+// app.use("/jobs", jobsRouter);
+// app.use("/stats", statsRouter);
+// app.use("/admin", adminRouter);
 
-app.use("/admin", adminRouter);
 module.exports = app;
