@@ -22,6 +22,8 @@ router.get("/allUsers", (req, res) => {
 
 
 
+
+
 //http://localhost:3000/users/signup
 //Create a new user
 router.post("/signup", (req, res) => {

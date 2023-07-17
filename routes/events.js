@@ -12,5 +12,17 @@ router.get("/allEvents", (req, res) => {
   });
 });
 
+//http://localhost:3000/events/single_event/:id
+//get single event for selected event
+// ie : 64b500f34b1ba69f4fe2612b
+
+// http://localhost:3000/events/single_event/64b500f34b1ba69f4fe2612b
+
+router.get("/single_event/:id", (req, res) => {
+  Event.findById(req.params.id).then((data) =>
+    res.json({ result: true, event: data })
+  );
+});
+
 
 module.exports = router;
