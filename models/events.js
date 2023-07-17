@@ -4,7 +4,7 @@ const eventsSchema = mongoose.Schema({
   name: String,
   location: String,
   date: Date,
-  zip_code: Number,
+  zip_code: String,
   start_hour: Date,
   active: Boolean,
   max_capacity: String,

@@ -2,9 +2,10 @@ var express = require("express");
 var router = express.Router();
 //const { checkBody } = require("../modules/checkbody");
 const Event = require("../models/events");
-// const JobType = require("../models/jobTypes");
 
-//http://localhost:3000/events/allEvents
+
+// GET all events
+// http://localhost:3000/events/allEvents
 
 router.get("/allEvents", (req, res) => {
   Event.find().then((data) => {
@@ -12,10 +13,9 @@ router.get("/allEvents", (req, res) => {
   });
 });
 
-//http://localhost:3000/events/single_event/:id
+// GET single event for selected event
+// http://localhost:3000/events/single_event/:id
 // http://localhost:3000/events/single_event/64b500f34b1ba69f4fe2612d
-//get single event for selected event
-
 
 router.get("/single_event/:id", (req, res) => {
   Event.findById(req.params.id).then((data) =>
@@ -23,10 +23,36 @@ router.get("/single_event/:id", (req, res) => {
   );
 });
 
+// POST new event
+// http://localhost:3000/events/
 
-//http://localhost:3000/events/delete/:id
-//delete jobs with id
+  router.post("/", (req, res) => {
+ 
+  const newEvent = new Event({
+    name: req.body.name,
+    location: req.body.location,
+    date: req.body.date,
+    zip_code: req.body.zipCode,
+    start_hour: req.body.startHour,
+    active: req.body.active,
+    max_capacity: req.body.maxCapacity,
+    description: req.body.description,
+    banner_img: req.body.bannerImg,
+    price: req.body.price,
+    year: req.body.year,
+    thumb_image: req.body.thumbImage,
+  });
+ 
+  newEvent.save().then(() => {
+    res.json({ result: true, newEvent: newEvent });
+  });
+});
+
+
+// DELETE event with ID
+// http://localhost:3000/events/delete/:id
 // http://localhost:3000/events/delete/64b500f34b1ba69f4fe2612d
+
 router.delete("/delete/:id", (req, res) => {
   Event.deleteOne({
     _id: req.params.id,
