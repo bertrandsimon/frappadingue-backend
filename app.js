@@ -12,6 +12,7 @@ var indexRouter = require("./routes/index");
 // const adminRouter = require("./routes/admin");
 // const statsRouter = require("./routes/stats");
 const eventsRouter = require("./routes/events");
+const usersRouter = require("./routes/users");
 
 var app = express();
 
@@ -27,6 +28,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
 app.use("/events", eventsRouter);
+app.use("/users", usersRouter);
 // app.use("/users", usersRouter);
 // app.use("/jobs", jobsRouter);
 // app.use("/stats", statsRouter);

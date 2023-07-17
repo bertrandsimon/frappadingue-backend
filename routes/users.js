@@ -4,12 +4,23 @@ require("../models/connection");
 const { checkBody } = require("../modules/checkbody");
 const uid2 = require("uid2");
 const bcrypt = require("bcrypt");
-const Applicant = require("../models/applicants");
-const uniqid = require("uniqid");
-const fs = require("fs");
-const Store = require("../models/stores");
-const Job = require("../models/jobs");
-const JobType = require("../models/jobTypes");
+// const Applicant = require("../models/applicants");
+// const uniqid = require("uniqid");
+// const fs = require("fs");
+// const Store = require("../models/stores");
+// const Job = require("../models/jobs");
+// const JobType = require("../models/jobTypes");
+const User = require("../models/users");
+
+//http://localhost:3000/users/allUsers
+
+router.get("/allUsers", (req, res) => {
+  User.find().then((data) => {
+    res.json({ result: true, all: data });
+  });
+});
+
+
 
 //http://localhost:3000/users/signup
 //Create a new user
@@ -68,20 +79,22 @@ router.post("/signin", (req, res) => {
     }
   });
 });
+
 //http://localhost:3000/users/upload/:token
 //Save a new doc in backend
-router.post("/upload/:token", async (req, res) => {
-  const docPath = `./doc/${uniqid()}.pdf`;
-  const resultMove = await req.files.docFromFront.mv(docPath);
-  if (!resultMove) {
-    Applicant.updateOne(
-      { token: req.params.token },
-      { resumeUrl: docPath }
-    ).then((data) => res.json({ result: true, message: "save ok " }));
-  } else {
-    res.json({ result: false, error: resultCopy });
-  }
-});
+// router.post("/upload/:token", async (req, res) => {
+//   const docPath = `./doc/${uniqid()}.pdf`;
+//   const resultMove = await req.files.docFromFront.mv(docPath);
+//   if (!resultMove) {
+//     Applicant.updateOne(
+//       { token: req.params.token },
+//       { resumeUrl: docPath }
+//     ).then((data) => res.json({ result: true, message: "save ok " }));
+//   } else {
+//     res.json({ result: false, error: resultCopy });
+//   }
+// });
+
 //http://localhost:3000/users/profile
 //add name & surname in applicant's profile
 // router.post("/profile", (req, res) => {
@@ -93,109 +106,113 @@ router.post("/upload/:token", async (req, res) => {
 //     res.json({ result: data.acknowledged });
 //   });
 // });
+
 //http://localhost:3000/users/skills
 //add skills in applicant's profile
-router.post("/skills", (req, res) => {
-  Applicant.updateOne(
-    { token: req.body.token },
-    { resume: { $push: { skills: req.body.skill } } }
-  ).then((data) => {
-    console.log(data);
-    const isGood = data.modifiedCount > 0;
-    res.json({ result: isGood });
-  });
-});
+// router.post("/skills", (req, res) => {
+//   Applicant.updateOne(
+//     { token: req.body.token },
+//     { resume: { $push: { skills: req.body.skill } } }
+//   ).then((data) => {
+//     console.log(data);
+//     const isGood = data.modifiedCount > 0;
+//     res.json({ result: isGood });
+//   });
+// });
+
 //http://localhost:3000/:delete
 //delete a doc in db
-router.delete("/:delete", (req, res) => {
-  Applicant.deleteOne({
-    token: req.body.token,
-  }).then((data) => {
-    if (data.deletedCount > 0) {
-      console.log(data);
-      res.json({ result: true, data: data.reference });
-    } else {
-      res.json({ result: false, error: "applicant not found" });
-    }
-  });
-});
+// router.delete("/:delete", (req, res) => {
+//   Applicant.deleteOne({
+//     token: req.body.token,
+//   }).then((data) => {
+//     if (data.deletedCount > 0) {
+//       console.log(data);
+//       res.json({ result: true, data: data.reference });
+//     } else {
+//       res.json({ result: false, error: "applicant not found" });
+//     }
+//   });
+// });
 
 //http://localhost:3000/users/pass
 //user can change password
 
-router.post("/pass", (req, res) => {
-  const { token, password, newPassword } = req.body;
-  console.log(req.body);
-  Applicant.findOne({ token }).then((data) => {
-    if (bcrypt.compareSync(password, data.password)) {
-      const newHash = bcrypt.hashSync(newPassword, 10);
-      Applicant.updateOne(
-        { token: req.body.token },
-        { password: newHash }
-      ).then((data) => {
-        console.log(data);
-        res.json({ result: data.modifiedCount > 0 });
-      });
-    } else {
-      res.json({ result: false });
-    }
-  });
-});
+// router.post("/pass", (req, res) => {
+//   const { token, password, newPassword } = req.body;
+//   console.log(req.body);
+//   Applicant.findOne({ token }).then((data) => {
+//     if (bcrypt.compareSync(password, data.password)) {
+//       const newHash = bcrypt.hashSync(newPassword, 10);
+//       Applicant.updateOne(
+//         { token: req.body.token },
+//         { password: newHash }
+//       ).then((data) => {
+//         console.log(data);
+//         res.json({ result: data.modifiedCount > 0 });
+//       });
+//     } else {
+//       res.json({ result: false });
+//     }
+//   });
+// });
 
 //http://localhost:3000/users/profile
 //see user profile
 
-router.get("/profile/:token", (req, res) => {
-  let profile = {};
-  Applicant.findOne({ token: req.params.token })
-    .populate({
-      path: "likedJobs",
-      populate: { path: "store", model: Store },
-    })
-    .populate({
-      path: "likedJobs",
-      populate: { path: "jobType", model: JobType },
-    })
-    .populate({
-      path: "appliedJobs",
-      populate: { path: "store", model: Store },
-    })
-    .populate({
-      path: "appliedJobs",
-      populate: { path: "jobType", model: JobType },
-    })
-    .then((data) => {
-      profile = data;
-      res.json({ result: true, allData: profile });
-    });
-});
+// router.get("/profile/:token", (req, res) => {
+//   let profile = {};
+//   Applicant.findOne({ token: req.params.token })
+//     .populate({
+//       path: "likedJobs",
+//       populate: { path: "store", model: Store },
+//     })
+//     .populate({
+//       path: "likedJobs",
+//       populate: { path: "jobType", model: JobType },
+//     })
+//     .populate({
+//       path: "appliedJobs",
+//       populate: { path: "store", model: Store },
+//     })
+//     .populate({
+//       path: "appliedJobs",
+//       populate: { path: "jobType", model: JobType },
+//     })
+//     .then((data) => {
+//       profile = data;
+//       res.json({ result: true, allData: profile });
+//     });
+// });
 
 //http://localhost:3000/users/deleteCV
 //delete CV in db & backend
-router.delete("/deleteCV", (req, res) => {
-  Applicant.findOne({ token }).then((data) => {
-    fs.unlinkSync(data.resumeUrl);
-    Applicant.updateOne({ token }, { resumeUrl: "" }).then((data) =>
-      res.json({ result: data.modifiedCount > 0 })
-    );
-  });
-});
+// router.delete("/deleteCV", (req, res) => {
+//   Applicant.findOne({ token }).then((data) => {
+//     fs.unlinkSync(data.resumeUrl);
+//     Applicant.updateOne({ token }, { resumeUrl: "" }).then((data) =>
+//       res.json({ result: data.modifiedCount > 0 })
+//     );
+//   });
+// });
+
 //http://localhost:3000/users/infoUser
-router.post("/infoUser", (req, res) => {
-  console.log(req.body);
-  Applicant.updateOne(
-    { token: req.body.token },
-    {
-      resume: {
-        profileDesc: req.body.desc,
-        educations: req.body.educ,
-        experiences: req.body.exp,
-        hobbies: req.body.hobbies,
-        englishLevel: req.body.eng,
-        spanishLevel: req.body.span,
-        germanLevel: req.body.germ,
-      },
-    }
-  ).then((data) => res.json({ result: data.modifiedCount > 0 }));
-});
+// router.post("/infoUser", (req, res) => {
+//   console.log(req.body);
+//   Applicant.updateOne(
+//     { token: req.body.token },
+//     {
+//       resume: {
+//         profileDesc: req.body.desc,
+//         educations: req.body.educ,
+//         experiences: req.body.exp,
+//         hobbies: req.body.hobbies,
+//         englishLevel: req.body.eng,
+//         spanishLevel: req.body.span,
+//         germanLevel: req.body.germ,
+//       },
+//     }
+//   ).then((data) => res.json({ result: data.modifiedCount > 0 }));
+// });
+
 module.exports = router;
