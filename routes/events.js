@@ -25,6 +25,7 @@ router.get("/single_event/:id", (req, res) => {
 
 // POST new event
 // http://localhost:3000/events/
+// date sample example for test : 2023-07-19T06:30:00.000Z
 
   router.post("/", (req, res) => {
  
