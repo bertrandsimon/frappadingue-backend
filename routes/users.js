@@ -5,7 +5,7 @@ const { checkBody } = require("../modules/checkbody");
 const uid2 = require("uid2");
 const bcrypt = require("bcrypt");
 // const Applicant = require("../models/applicants");
-// const uniqid = require("uniqid");
+const uniqid = require("uniqid");
 // const fs = require("fs");
 // const Store = require("../models/stores");
 // const Job = require("../models/jobs");
@@ -35,11 +35,11 @@ router.post("/signup", (req, res) => {
 
   // Check if the user has not already been registered
 
-  Applicant.findOne({ email: req.body.email }).then((data) => {
+  User.findOne({ email: req.body.email }).then((data) => {
     if (data === null) {
       const hash = bcrypt.hashSync(req.body.password, 10);
 
-      const newApplicant = new Applicant({
+      const newUser = new User({
         email: req.body.email,
         password: hash,
         name: req.body.name,
@@ -47,7 +47,7 @@ router.post("/signup", (req, res) => {
         token: uid2(32),
       });
       //save new doc in db
-      newApplicant.save().then((newDoc) => {
+      newUser.save().then((newDoc) => {
         res.json({ result: true, token: newDoc.token });
       });
     } else {
@@ -65,7 +65,7 @@ router.post("/signin", (req, res) => {
     return res.json({ result: false, error: "something is missing" });
   }
   //search if someone already use this email
-  Applicant.findOne({ email }).then((data) => {
+  User.findOne({ email }).then((data) => {
     if (!data) {
       return res.json({ result: false, error: "user doesn't exist" });
     }

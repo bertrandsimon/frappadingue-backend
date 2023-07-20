@@ -8,6 +8,9 @@ const userSchema = mongoose.Schema({
   email: String,
   password: String,
   team_name: String,
+  city: String,
+  token: String,
+
 });
 
 const User = mongoose.model("users", userSchema);

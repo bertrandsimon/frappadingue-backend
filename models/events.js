@@ -3,15 +3,15 @@ const mongoose = require("mongoose");
 const eventsSchema = mongoose.Schema({
   name: String,
   location: String,
-  date: Date,
+  date: String,
   zip_code: String,
-  start_hour: Date,
+  start_hour: String,
   active: Boolean,
   max_capacity: String,
   description: String,
   banner_img: String,
-  price: Number,
-  year: Number,
+  price: String,
+  year: String,
   thumb_image: String,
 });
 

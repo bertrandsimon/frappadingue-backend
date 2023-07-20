@@ -33,15 +33,15 @@ router.get("/single_event/:id", (req, res) => {
     name: req.body.name,
     location: req.body.location,
     date: req.body.date,
-    zip_code: req.body.zipCode,
-    start_hour: req.body.startHour,
+    zip_code: req.body.zip_code,
+    start_hour: req.body.start_hour,
     active: req.body.active,
-    max_capacity: req.body.maxCapacity,
+    max_capacity: req.body.max_capacity,
     description: req.body.description,
-    banner_img: req.body.bannerImg,
+    banner_img: req.body.banner_img,
     price: req.body.price,
     year: req.body.year,
-    thumb_image: req.body.thumbImage,
+    thumb_image: req.body.thumb_image,
   });
  
   newEvent.save().then(() => {
