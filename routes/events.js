@@ -13,7 +13,7 @@ router.get("/allEvents", (req, res) => {
   });
 });
 
-// GET single event for selected event
+// DELETE single event
 // http://localhost:3000/events/single_event/:id
 // http://localhost:3000/events/single_event/64b500f34b1ba69f4fe2612d
 
