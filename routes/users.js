@@ -4,12 +4,8 @@ require("../models/connection");
 const { checkBody } = require("../modules/checkbody");
 const uid2 = require("uid2");
 const bcrypt = require("bcrypt");
-// const Applicant = require("../models/applicants");
 const uniqid = require("uniqid");
 // const fs = require("fs");
-// const Store = require("../models/stores");
-// const Job = require("../models/jobs");
-// const JobType = require("../models/jobTypes");
 const User = require("../models/users");
 
 //http://localhost:3000/users/allUsers
@@ -21,6 +17,21 @@ router.get("/allUsers", (req, res) => {
 });
 
 
+//http://localhost:3000/users/id/64b510fd4b1ba69f4fe26161
+// GET user by Id
+router.get("/id/:id", (req, res) => {
+  //console.log(typeof req.params.id);
+  User.findOne({
+    _id: req.params.id,
+  }).then((data) => {
+    if (data) {
+      console.log(data);
+      res.json({ result: true, user: data });
+    } else {
+      res.json({ result: false, error: "user not found" });
+    }
+  });
+});
 
 
 
