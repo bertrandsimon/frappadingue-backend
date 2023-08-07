@@ -10,6 +10,14 @@ var router = express.Router();
 // const Contract = require("../models/contracts");
 // const Job = require("../models/jobs");
 
+// simple route for deployment test
+//http://localhost:3000/date
+router.get('/date', (req, res) => {
+  const date = new Date();
+  res.json({ now: date });
+ });
+
+
 //http://localhost:3000/edito
 //router.get edito for home page
 router.get("/edito", (req, res) => {
