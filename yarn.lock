@@ -1177,7 +1177,7 @@ etag@~1.8.1:
 
 express-fileupload@^1.4.0:
   version "1.4.0"
-  resolved "https://registry.npmjs.org/express-fileupload/-/express-fileupload-1.4.0.tgz"
+  resolved "https://registry.yarnpkg.com/express-fileupload/-/express-fileupload-1.4.0.tgz#be9d70a881d6c2b1ce668df86e4f89ddbf238ec7"
   integrity sha512-RjzLCHxkv3umDeZKeFeMg8w7qe0V09w3B7oGZprr/oO2H/ISCgNzuqzn7gV3HRWb37GjRk429CCpSLS2KNTqMQ==
   dependencies:
     busboy "^1.6.0"
