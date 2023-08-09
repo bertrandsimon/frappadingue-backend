@@ -10,11 +10,9 @@ require("./models/connection");
 var indexRouter = require("./routes/index");
 const eventsRouter = require("./routes/events");
 const usersRouter = require("./routes/users");
-
+const adminsRouter = require("./routes/admins");
 
 const fileUpload = require('express-fileupload');
-
-
 
 var app = express();
 
@@ -32,6 +30,7 @@ app.use(fileUpload());
 app.use("/", indexRouter);
 app.use("/events", eventsRouter);
 app.use("/users", usersRouter);
+app.use("/admins", adminsRouter);
 // app.use("/users", usersRouter);
 // app.use("/jobs", jobsRouter);
 // app.use("/stats", statsRouter);

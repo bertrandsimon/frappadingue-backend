@@ -12,9 +12,10 @@ const Store = require("../models/stores");
 const JobType = require("../models/jobTypes");
 const Contract = require("../models/contracts");
 
-//http://localhost:3000/admin/signup
+//http://localhost:3000/admins/signup
 //create new admin
 router.post("/signup", (req, res) => {
+  console.log(req.body);
   if (!checkBody(req.body, ["email", "password"])) {
     res.json({ result: false, error: "Missing or empty fields" });
     return;
@@ -40,7 +41,7 @@ router.post("/signup", (req, res) => {
     }
   });
 });
-//http://localhost:3000/admin/signin
+//http://localhost:3000/admins/signin
 //login for admin
 router.post("/signin", (req, res) => {
   //Check if body is empty
@@ -58,7 +59,7 @@ router.post("/signin", (req, res) => {
   });
 });
 
-//http://localhost:3000/admin/jobs
+//http://localhost:3000/admins/jobs
 //get all jobs
 router.get("/jobs", (req, res) => {
   Job.find()
@@ -68,7 +69,7 @@ router.get("/jobs", (req, res) => {
     .then((data) => res.json({ result: true, allJobs: data }));
 });
 
-//http://localhost:3000/admin/applicants
+//http://localhost:3000/admins/applicants
 //get all applicants
 router.get("/applicants", (req, res) => {
   Applicant.find()
@@ -97,7 +98,7 @@ router.get("/applicants", (req, res) => {
     });
 });
 
-//http://localhost:3000/admin/eval
+//http://localhost:3000/admins/eval
 //create evaluation
 router.post("/eval", (req, res) => {
   const newEval = new Evaluation({
@@ -117,7 +118,7 @@ router.post("/eval", (req, res) => {
       res.json({ result: isGood });
     });
 });
-//http://localhost:3000/admin/templates
+//http://localhost:3000/admins/templates
 //get template with templateName
 
 router.get("/templates", (req, res) => {
@@ -126,7 +127,7 @@ router.get("/templates", (req, res) => {
     res.json({ result: true, template: data });
   });
 });
-//http://localhost:3000/admin/:delete
+//http://localhost:3000/admins/:delete
 //delete one template
 router.delete("/:delete", (req, res) => {
   Template.deleteOne({
@@ -154,7 +155,7 @@ router.delete("/:delete", (req, res) => {
 //   });
 // });
 
-//http://localhost:3000/admin/evaluations/:delete
+//http://localhost:3000/admins/evaluations/:delete
 //delete one evaluation
 router.delete("/evaluation/:delete", (req, res) => {
   Evaluation.deleteOne({
@@ -169,7 +170,7 @@ router.delete("/evaluation/:delete", (req, res) => {
   });
 });
 
-//http://localhost:3000/admin/stores
+//http://localhost:3000/admins/stores
 router.get("/stores", async (req, res) => {
   const allStores = await Store.find();
   res.json({ result: true, allStores });
