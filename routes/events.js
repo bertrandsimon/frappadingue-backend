@@ -42,8 +42,10 @@ router.get("/single_event/:id", (req, res) => {
     price: req.body.price,
     year: req.body.year,
     thumb_image: req.body.thumb_image,
-    format_S_stripe_paylink: req.body.format_S_stripe_paylink,
-    format_L_stripe_paylink: req.body.format_L_stripe_paylink,
+    format_s_price: req.body.format_s_price,
+    format_l_price: req.body.format_l_price,
+    format_s_stripe_paylink: req.body.format_s_stripe_paylink,
+    format_l_stripe_paylink: req.body.format_l_stripe_paylink,
   });
  
   newEvent.save().then(() => {
