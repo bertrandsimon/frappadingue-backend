@@ -39,7 +39,6 @@ router.get("/single_event/:id", (req, res) => {
     max_capacity: req.body.max_capacity,
     description: req.body.description,
     banner_img: req.body.banner_img,
-    price: req.body.price,
     year: req.body.year,
     thumb_image: req.body.thumb_image,
     format_s_price: req.body.format_s_price,

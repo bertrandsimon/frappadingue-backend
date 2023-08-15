@@ -10,7 +10,6 @@ const eventsSchema = mongoose.Schema({
   max_capacity: String,
   description: String,
   //banner_img: String,
-  price: String,
   year: String,
   thumb_image: String,
   format_s_price: String,
