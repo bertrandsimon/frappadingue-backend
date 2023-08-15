@@ -13,6 +13,8 @@ const eventsSchema = mongoose.Schema({
   price: String,
   year: String,
   thumb_image: String,
+  format_S_stripe_paylink: String,
+  format_L_stripe_paylink: String,
 });
 
 const Event = mongoose.model("events", eventsSchema);
