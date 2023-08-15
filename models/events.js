@@ -9,7 +9,7 @@ const eventsSchema = mongoose.Schema({
   active: Boolean,
   max_capacity: String,
   description: String,
-  banner_img: String,
+  //banner_img: String,
   price: String,
   year: String,
   thumb_image: String,
