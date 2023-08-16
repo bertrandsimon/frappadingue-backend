@@ -15,9 +15,24 @@ router.get("/allEvents", (req, res) => {
   });
 });
 
+// GET event by id
+//http://localhost:3000/events/64db8801af6df4463b654a88
+router.get("/:id", (req, res) => {
+ 
+  Event.findById(req.params.id)
+  .then((data) => {
+    if (data) {
+      console.log(data);
+      res.json({ result: true, event: data });
+    } else {
+      res.json({ result: false, error: "event not found" });
+    }
+  });
+});
+
 // DELETE single event
 // http://localhost:3000/events/single_event/:id
-// http://localhost:3000/events/single_event/64b500f34b1ba69f4fe2612d
+// http://localhost:3000/events/single_event/64db8801af6df4463b654a88
 
 router.get("/single_event/:id", (req, res) => {
   Event.findById(req.params.id).then((data) =>
