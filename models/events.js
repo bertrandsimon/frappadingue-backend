@@ -12,8 +12,9 @@ const eventsSchema = mongoose.Schema({
   //banner_img: String,
   year: String,
   thumb_image: String,
-  format_s_price: String,
-  format_l_price: String,
+  price: Number,
+  format_s_price: Number,
+  format_l_price: Number,
   format_s_stripe_paylink: String,
   format_l_stripe_paylink: String,
 });
