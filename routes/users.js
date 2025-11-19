@@ -10,36 +10,26 @@ const User = require("../models/users");
 
 //http://localhost:3000/users/allUsers
 
-const { cacheMiddleware } = require("../modules/cache");
-
-router.get("/allUsers", cacheMiddleware(300), (req, res) => {
-  User.find()
-  .lean()
-  .then((data) => {
+router.get("/allUsers", (req, res) => {
+  User.find().then((data) => {
     res.json({ result: true, all: data });
-  })
-  .catch((error) => {
-    res.status(500).json({ result: false, error: error.message });
   });
 });
 
 
 //http://localhost:3000/users/id/64b510fd4b1ba69f4fe26161
 // GET user by Id
-router.get("/id/:id", cacheMiddleware(300), (req, res) => {
+router.get("/id/:id", (req, res) => {
+  //console.log(typeof req.params.id);
   User.findOne({
     _id: req.params.id,
-  })
-  .lean()
-  .then((data) => {
+  }).then((data) => {
     if (data) {
+      console.log(data);
       res.json({ result: true, user: data });
     } else {
       res.json({ result: false, error: "user not found" });
     }
-  })
-  .catch((error) => {
-    res.status(500).json({ result: false, error: error.message });
   });
 });
 
@@ -86,9 +76,7 @@ router.post("/signin", (req, res) => {
     return res.json({ result: false, error: "something is missing" });
   }
   //search if someone already use this email
-  User.findOne({ email })
-  .lean()
-  .then((data) => {
+  User.findOne({ email }).then((data) => {
     if (!data) {
       return res.json({ result: false, error: "user doesn't exist" });
     }
@@ -102,9 +90,6 @@ router.post("/signin", (req, res) => {
     } else {
       return res.json({ result: false, error: "wrong password" });
     }
-  })
-  .catch((error) => {
-    res.status(500).json({ result: false, error: error.message });
   });
 });
 

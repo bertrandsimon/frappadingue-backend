@@ -2,39 +2,31 @@ var express = require("express");
 var router = express.Router();
 //const { checkBody } = require("../modules/checkbody");
 const Event = require("../models/events");
-const { cacheMiddleware, clearCache } = require("../modules/cache");
 
 
 // GET all events
 // http://localhost:3000/events/allEvents
 
-router.get("/allEvents", cacheMiddleware(300), (req, res) => {
+router.get("/allEvents", (req, res) => {
   Event.find()
   .sort({ date: 1 })
-  .lean() // Use lean() for better performance - returns plain JS objects
   .then((data) => {
     res.json({ result: true, all: data });
-  })
-  .catch((error) => {
-    res.status(500).json({ result: false, error: error.message });
   });
 });
 
 // GET event by id
 //http://localhost:3000/events/64db8801af6df4463b654a88
-router.get("/:id", cacheMiddleware(300), (req, res) => {
+router.get("/:id", (req, res) => {
  
   Event.findById(req.params.id)
-  .lean()
   .then((data) => {
     if (data) {
+      console.log(data);
       res.json({ result: true, event: data });
     } else {
       res.json({ result: false, error: "event not found" });
     }
-  })
-  .catch((error) => {
-    res.status(500).json({ result: false, error: error.message });
   });
 });
 
@@ -42,15 +34,10 @@ router.get("/:id", cacheMiddleware(300), (req, res) => {
 // http://localhost:3000/events/single_event/:id
 // http://localhost:3000/events/single_event/64db8801af6df4463b654a88
 
-router.get("/single_event/:id", cacheMiddleware(300), (req, res) => {
-  Event.findById(req.params.id)
-  .lean()
-  .then((data) => {
-    res.json({ result: true, event: data });
-  })
-  .catch((error) => {
-    res.status(500).json({ result: false, error: error.message });
-  });
+router.get("/single_event/:id", (req, res) => {
+  Event.findById(req.params.id).then((data) =>
+    res.json({ result: true, event: data })
+  );
 });
 
 // POST new event
@@ -78,12 +65,7 @@ router.get("/single_event/:id", cacheMiddleware(300), (req, res) => {
   });
  
   newEvent.save().then(() => {
-    // Clear cache when new event is added
-    clearCache("/events");
     res.json({ result: true, newEvent: newEvent });
-  })
-  .catch((error) => {
-    res.status(500).json({ result: false, error: error.message });
   });
 });
 
@@ -97,15 +79,11 @@ router.delete("/delete/:id", (req, res) => {
     _id: req.params.id,
   }).then((data) => {
     if (data.deletedCount > 0) {
-      // Clear cache when event is deleted
-      clearCache("/events");
+      console.log(data);
       res.json({ result: true, data: data });
     } else {
       res.json({ result: false, error: "event not found" });
     }
-  })
-  .catch((error) => {
-    res.status(500).json({ result: false, error: error.message });
   });
 });
 

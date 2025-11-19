@@ -31,9 +31,6 @@ const applicantSchema = mongoose.Schema({
   resume: resumeSchema,
 });
 
-// Add index for frequently queried field
-applicantSchema.index({ token: 1 }); // For token-based lookups
-
 const Applicant = mongoose.model("applicants", applicantSchema);
 
 module.exports = Applicant;

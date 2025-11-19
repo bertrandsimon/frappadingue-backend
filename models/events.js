@@ -19,11 +19,6 @@ const eventsSchema = mongoose.Schema({
   format_l_stripe_paylink: String,
 });
 
-// Add indexes for frequently queried fields
-eventsSchema.index({ date: 1 });
-eventsSchema.index({ active: 1 });
-eventsSchema.index({ year: 1 });
-
 const Event = mongoose.model("events", eventsSchema);
 
 module.exports = Event;

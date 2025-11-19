@@ -6,7 +6,6 @@ const Applicant = require("../models/applicants");
 const Contract = require("../models/contracts");
 const JobType = require("../models/jobTypes");
 const Store = require("../models/stores");
-const { cacheMiddleware, clearCache } = require("../modules/cache");
 
 // http://localhost:3000/jobs/
 // creat a new job advertisement
@@ -33,129 +32,95 @@ router.post("/", (req, res) => {
   });
   // save the new  job advertisement
   newJob.save().then(() => {
-    // Clear cache when new job is added
-    clearCache("/jobs");
     res.json({ result: true, newjob: newJob });
-  })
-  .catch((error) => {
-    res.status(500).json({ result: false, error: error.message });
   });
 });
 
 // router get search all, by validated or not, by top Offers or not
 //http://localhost:3000/jobs/
 // router get search all
-router.get("/", cacheMiddleware(300), async (req, res) => {
-  try {
-    // Use MongoDB queries instead of JavaScript filtering for better performance
-    const [allOffers, topOffers, allJobs, offersValidated, offersNotValidated] = await Promise.all([
-      Job.find()
-        .populate("contract")
-        .populate("store")
-        .populate("jobType")
-        .lean(),
-      Job.find({ isTopOffer: true, isValidated: true })
-        .populate("contract")
-        .populate("store")
-        .populate("jobType")
-        .lean(),
-      Job.find({ isTopOffer: false, isValidated: true })
-        .populate("contract")
-        .populate("store")
-        .populate("jobType")
-        .lean(),
-      Job.find({ isValidated: true })
-        .populate("contract")
-        .populate("store")
-        .populate("jobType")
-        .lean(),
-      Job.find({ isValidated: false })
-        .populate("contract")
-        .populate("store")
-        .populate("jobType")
-        .lean(),
-    ]);
+router.get("/", (req, res) => {
+  Job.find()
+    .populate("contract")
+    .populate("store")
+    .populate("jobType")
+    .then((data) => {
+      const isTopOffer = data.filter(
+        (e) => e.isTopOffer === true && e.isValidated === true
+      );
+      const isNotTop = data.filter(
+        (e) => e.isTopOffer === false && e.isValidated === true
+      );
+      const isNotValidated = data.filter((e) => e.isValidated === false);
+      const offerValidated = data.filter((e) => e.isValidated === true);
 
-    res.json({
-      result: true,
-      allOffers,
-      topOffers,
-      allJobs,
-      offersValidated,
-      offersNotValidated,
+      if (data) {
+        res.json({
+          result: true,
+          allOffers: data,
+          topOffers: isTopOffer,
+          allJobs: isNotTop,
+          offersValidated: offerValidated,
+          offersNotValidated: isNotValidated,
+        });
+      } else {
+        res.json({ result: false, error: "job advertisement not found" });
+      }
     });
-  } catch (error) {
-    res.status(500).json({ result: false, error: error.message });
-  }
 });
 
 //http://localhost:3000/jobs/code/:postalCode
 //search by postal code (offer validated only)
-router.get("/code/:postalCode", cacheMiddleware(300), async (req, res) => {
-  try {
-    // First find stores with matching postal code, then find jobs
-    const stores = await Store.find({ postalCode: req.params.postalCode }).lean();
-    const storeIds = stores.map(store => store._id);
-    
-    const postal = await Job.find({
-      store: { $in: storeIds },
-      isValidated: true
-    })
-      .populate("contract")
-      .populate("store")
-      .populate("jobType")
-      .lean();
-
-    res.json({ result: true, storeSelected: postal });
-  } catch (error) {
-    res.status(500).json({ result: false, error: error.message });
-  }
+router.get("/code/:postalCode", (req, res) => {
+  Job.find()
+    .populate("contract")
+    .populate("store")
+    .populate("jobType")
+    .then((data) => {
+      const postal = data.filter(
+        (e) =>
+          e.store.postalCode === req.params.postalCode && e.isValidated === true
+      );
+      if (data) {
+        console.log(data);
+        res.json({ result: true, storeSelected: postal });
+      } else {
+        res.json({ result: false, error: "job advertisement not found" });
+      }
+    });
 });
 
 //http://localhost:3000/jobs/type/:jobtype
 // search by jobTag (offer validated only)
-router.get("/type/:jobtype", cacheMiddleware(300), async (req, res) => {
-  try {
-    // First find job type, then find jobs with that type
-    const jobType = await JobType.findOne({ typeName: req.params.jobtype }).lean();
-    
-    if (!jobType) {
-      return res.json({ result: false, error: "job type not found" });
-    }
-
-    const typeOfJob = await Job.find({
-      jobType: jobType._id,
-      isValidated: true
-    })
-      .populate("contract")
-      .populate("store")
-      .populate("jobType")
-      .lean();
-
-    res.json({ result: true, Jobtag: typeOfJob });
-  } catch (error) {
-    res.status(500).json({ result: false, error: error.message });
-  }
+router.get("/type/:jobtype", (req, res) => {
+  Job.find()
+    .populate("contract")
+    .populate("store")
+    .populate("jobType")
+    .then((data) => {
+      let typeOfJob = data.filter(
+        (e) => e.jobType.typeName === req.params.jobtype
+      );
+      if (data) {
+        res.json({ result: true, Jobtag: typeOfJob });
+      } else {
+        res.json({ result: false, error: "job advertisement not found" });
+      }
+    });
 });
 //http://localhost:3000/jobs/id/:id
 // search offer by Id
-router.get("/id/:id", cacheMiddleware(300), (req, res) => {
+router.get("/id/:id", (req, res) => {
+  console.log(typeof req.params.id);
   Job.findOne({
     _id: req.params.id,
-  })
-  .populate("contract")
-  .populate("store")
-  .populate("jobType")
-  .lean()
-  .then((data) => {
+  }).then((data) => {
     if (data) {
+      console.log(data);
       res.json({ result: true, job: data });
     } else {
       res.json({ result: false, error: "job advertisement not found" });
     }
-  })
-  .catch((error) => {
-    res.status(500).json({ result: false, error: error.message });
   });
 });
 
@@ -166,15 +131,11 @@ router.delete("/delete/:delete", (req, res) => {
     _id: req.params.delete,
   }).then((data) => {
     if (data.deletedCount > 0) {
-      // Clear cache when job is deleted
-      clearCache("/jobs");
+      console.log(data);
       res.json({ result: true, data: data.reference });
     } else {
       res.json({ result: false, error: "job not found" });
     }
-  })
-  .catch((error) => {
-    res.status(500).json({ result: false, error: error.message });
   });
 });
 //http://localhost:3000/jobs/type
@@ -211,100 +172,58 @@ router.post("/applied", (req, res) => {
 
 //http://localhost:3000/jobs/allTypes
 //get all types
-router.get("/allTypes", cacheMiddleware(600), (req, res) => {
-  JobType.find()
-  .lean()
-  .then((data) => {
+router.get("/allTypes", (req, res) => {
+  JobType.find().then((data) => {
     res.json({ result: true, all: data });
-  })
-  .catch((error) => {
-    res.status(500).json({ result: false, error: error.message });
   });
 });
 
 //http://localhost:3000/jobs/byTypes
 //sort jobs by types
 
-router.get("/byTypes", cacheMiddleware(300), async (req, res) => {
-  try {
-    const types = await JobType.find().lean();
-    const typeIds = types.map(type => type._id);
-    
-    // Fetch all jobs with populated fields
-    const jobs = await Job.find()
-      .populate("contract")
-      .populate("store")
-      .populate("jobType")
-      .lean();
+router.get("/byTypes", async (req, res) => {
+  const types = await JobType.find().then((data) => data);
+  const jobs = await Job.find()
+    .populate("contract")
+    .populate("store")
+    .populate("jobType")
+    .then((data) => data);
 
-    // Use Map for O(1) lookup instead of filter
-    const jobsByTypeMap = new Map();
-    types.forEach((type) => {
-      jobsByTypeMap.set(type.typeName.toString(), {
-        key: type.typeName,
-        nb: 0,
-        data: [],
-      });
+  const sortedJobs = [];
+  types.forEach((type) => {
+    sortedJobs.push({
+      key: type.typeName,
+      nb: jobs.filter((job) => job.jobType.typeName === type.typeName).length,
+      data: jobs.filter((job) => job.jobType.typeName === type.typeName),
     });
-
-    // Group jobs by type
-    jobs.forEach((job) => {
-      if (job.jobType && jobsByTypeMap.has(job.jobType.typeName)) {
-        const typeData = jobsByTypeMap.get(job.jobType.typeName);
-        typeData.nb++;
-        typeData.data.push(job);
-      }
-    });
-
-    const sortedJobs = Array.from(jobsByTypeMap.values());
-    res.json({ result: true, jobsByType: sortedJobs });
-  } catch (error) {
-    res.status(500).json({ result: false, error: error.message });
-  }
+  });
+  res.json({ result: true, jobsByType: sortedJobs });
 });
 
 //http://localhost:3000/jobs/update/:key
 //Change value for one key in one job
 router.post("/update/:key", (req, res) => {
-  Job.findOne({ _id: req.body.id })
-  .then((data) => {
-    if (!data) {
-      return res.json({ result: false, error: "job not found" });
-    }
+  Job.findOne({ _id: req.body.id }).then((data) => {
     const newValue = data[req.params.key];
-    Job.updateOne({ _id: data._id }, { [req.params.key]: !newValue })
-    .then((data) => {
-      // Clear cache when job is updated
-      clearCache("/jobs");
-      res.json({ result: data.modifiedCount > 0 });
-    });
-  })
-  .catch((error) => {
-    res.status(500).json({ result: false, error: error.message });
+    Job.updateOne({ _id: data._id }, { [req.params.key]: !newValue }).then(
+      (data) => res.json({ result: data.modifiedCount > 0 })
+    );
   });
 });
 
 //http://localhost:3000/jobs/inputData
 //all data for input autocomplete
-router.get("/inputData", cacheMiddleware(600), async (req, res) => {
-  try {
-    const [jobs, stores] = await Promise.all([
-      Job.find().select("title").lean(),
-      Store.find().select("postalCode storeName").lean(),
-    ]);
-
-    // Use Set for unique values (faster than filter + indexOf)
-    const jobNameSet = new Set(jobs.map((el) => el.title));
-    const jobName = Array.from(jobNameSet);
-    
-    const storeData = stores.map((el) => {
+router.get("/inputData", async (req, res) => {
+  let jobName = await Job.find().then((data) => data.map((el) => el.title));
+  jobName = jobName.filter((el, i) => jobName.indexOf(el) === i);
+  let storeData = await Store.find().then((data) =>
+    data.map((el) => {
       return `${el.postalCode} ${el.storeName}`;
-    });
+      // return  postalCode: el.postalCode, storeName: el.storeName ;
+    })
+  );
 
-    res.json({ result: true, postes: jobName, stores: storeData });
-  } catch (error) {
-    res.status(500).json({ result: false, error: error.message });
-  }
+  res.json({ result: true, postes: jobName, stores: storeData });
 });
 
 //http://localhost:3000/jobs/deleteLiked
@@ -314,22 +233,17 @@ router.delete("/deleteLiked", (req, res) => {
     { token: req.body.token },
     { $pull: { likedJobs: req.body.idJob } }
   ).then((data) => {
+    console.log(data);
     res.json({ result: data.modifiedCount > 0 });
-  })
-  .catch((error) => {
-    res.status(500).json({ result: false, error: error.message });
   });
 });
 //localhost:3000/jobs/deleteApplied
 //delete one job applied
-router.delete("/deleteApplied", (req, res) => {
+http: router.delete("/deleteApplied", (req, res) => {
   Applicant.updateOne(
     { token: req.body.token },
-    { $pull: { appliedJobs: req.body.idJob } }
-  ).then((data) => res.json({ result: data.modifiedCount > 0 }))
-  .catch((error) => {
-    res.status(500).json({ result: false, error: error.message });
-  });
+    { $pull: { likedJobs: req.body.idJob } }
+  ).then((data) => res.json({ result: data.modifiedCount > 0 }));
 });
 
 module.exports = router;
