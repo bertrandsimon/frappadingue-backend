@@ -4,6 +4,7 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+var compression = require("compression");
 require("./models/connection");
 
 
@@ -19,6 +20,7 @@ var app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
 
+app.use(compression()); // Compress all responses
 app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());

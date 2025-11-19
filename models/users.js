@@ -13,6 +13,10 @@ const userSchema = mongoose.Schema({
 
 });
 
+// Add indexes for frequently queried fields
+userSchema.index({ email: 1 }, { unique: true }); // Unique index for email lookups
+userSchema.index({ token: 1 }); // For token-based authentication
+
 const User = mongoose.model("users", userSchema);
 
 module.exports = User;

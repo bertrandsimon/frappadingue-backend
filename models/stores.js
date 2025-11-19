@@ -17,6 +17,10 @@ const storeSchema = mongoose.Schema({
   adherent: String,
 });
 
+// Add indexes for frequently queried fields
+storeSchema.index({ postalCode: 1 }); // For postal code searches
+storeSchema.index({ storeName: 1 }); // For store name lookups
+
 const Store = mongoose.model("stores", storeSchema);
 
 module.exports = Store;
