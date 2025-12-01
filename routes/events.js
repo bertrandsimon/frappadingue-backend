@@ -8,7 +8,7 @@ const Event = require("../models/events");
 // http://localhost:3000/events/allEvents
 
 router.get("/allEvents", (req, res) => {
-  Event.find()
+  Event.find({ active: true })
   .sort({ date: 1 })
   .then((data) => {
     res.json({ result: true, all: data });
